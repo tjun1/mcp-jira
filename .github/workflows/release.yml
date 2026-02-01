@@ -1,0 +1,107 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run tests
+        run: bun test
+
+      - name: Build for macOS (arm64)
+        run: bun build --compile --target=bun-darwin-arm64 --outfile=mcp-jira-darwin-arm64 src/index.ts
+
+      - name: Build for Linux (x64)
+        run: bun build --compile --target=bun-linux-x64 --outfile=mcp-jira-linux-x64 src/index.ts
+
+      - name: Build for Windows (x64)
+        run: bun build --compile --target=bun-windows-x64 --outfile=mcp-jira-windows-x64.exe src/index.ts
+
+      - name: Package skills
+        run: tar -czf skills.tar.gz skills/
+
+      - name: Generate checksums
+        run: |
+          echo "# SHA256 Checksums" > checksums.txt
+          echo "" >> checksums.txt
+          shasum -a 256 mcp-jira-darwin-arm64 | tee -a checksums.txt
+          shasum -a 256 mcp-jira-linux-x64 | tee -a checksums.txt
+          shasum -a 256 mcp-jira-windows-x64.exe | tee -a checksums.txt
+          shasum -a 256 skills.tar.gz | tee -a checksums.txt
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            mcp-jira-darwin-arm64
+            mcp-jira-linux-x64
+            mcp-jira-windows-x64.exe
+            skills.tar.gz
+            checksums.txt
+          body: |
+            ## JIRA MCP Server ${{ github.ref_name }}
+
+            JIRA Cloud 用の MCP サーバーです。Issue の検索・詳細取得機能を提供します。
+
+            ### インストール
+
+            各プラットフォーム向けのバイナリをダウンロードし、実行可能にしてください。
+            詳細な手順は [README.md](https://github.com/tjun1/mcp-jira/blob/main/README.md) を参照してください。
+
+            ### 成果物
+
+            - **macOS (Apple Silicon)**: `mcp-jira-darwin-arm64`
+            - **Linux (x64)**: `mcp-jira-linux-x64`
+            - **Windows (x64)**: `mcp-jira-windows-x64.exe`
+            - **Skills**: `skills.tar.gz` - Claude Code 用スキルファイル
+            - **Checksums**: `checksums.txt` - SHA256 チェックサム
+
+            ### チェックサム検証
+
+            ```bash
+            # macOS/Linux
+            shasum -a 256 -c checksums.txt
+
+            # Windows PowerShell
+            $hash = (Get-FileHash .\mcp-jira-windows-x64.exe -Algorithm SHA256).Hash
+            # checksums.txt と比較
+            ```
+
+            ### 機能
+
+            - **jira_search**: JQL による Issue 検索
+            - **jira_get_issue**: Issue 詳細取得
+            - デフォルトプロジェクトフィルタリング
+            - ADF to Markdown 変換
+
+            ### Claude Code Skills
+
+            Claude Code で使える便利なスキル：
+            - `/jira-search` - JQL で Issue を検索
+            - `/jira-get` - Issue 詳細を取得
+            - `/jira-list-open` - 未完了チケット一覧
+            - `/jira-my-issues` - 自分のチケット一覧
+
+            skills のインストール：
+            ```bash
+            mkdir -p ~/.claude/skills
+            tar -xzf skills.tar.gz -C ~/.claude/skills
+            ```
+          generate_release_notes: true

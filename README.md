@@ -4,6 +4,23 @@ JIRA の Issue 検索・詳細取得機能を提供する MCP サーバー。
 
 ## インストール
 
+### バイナリをダウンロード
+
+[Releases ページ](https://github.com/tjun1/mcp-jira/releases) から環境に合ったバイナリをダウンロード：
+
+| プラットフォーム | ファイル名 |
+|------------------|------------|
+| macOS (Apple Silicon) | `mcp-jira-darwin-arm64` |
+| Linux (x64) | `mcp-jira-linux-x64` |
+| Windows (x64) | `mcp-jira-windows-x64.exe` |
+
+ダウンロード後、PATH の通った場所に配置して実行権限を付与：
+
+```bash
+chmod +x mcp-jira-*
+mv mcp-jira-* ~/.local/bin/mcp-jira
+```
+
 ### ソースからビルド
 
 ```bash
@@ -169,7 +186,17 @@ Claude Code で使える便利なスキル（スラッシュコマンド）を�
 
 ### インストール方法
 
-スキルディレクトリをグローバル設定にコピー：
+#### リリースからインストール（推奨）
+
+```bash
+# スキルをダウンロードして展開
+curl -L -o skills.tar.gz https://github.com/tjun1/mcp-jira/releases/latest/download/skills.tar.gz
+mkdir -p ~/.claude/skills
+tar -xzf skills.tar.gz -C ~/.claude/skills
+rm skills.tar.gz
+```
+
+#### ソースからインストール
 
 ```bash
 mkdir -p ~/.claude/skills
