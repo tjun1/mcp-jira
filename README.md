@@ -163,6 +163,40 @@ Issue の詳細情報を取得する。
 - 「jira_get_issue で PROJ-123 の詳細を見せて」
 - 「jira_get_issue でそのチケットの内容を取得して」
 
+## Claude Code Skills
+
+Claude Code で使える便利なスキル（スラッシュコマンド）を提供しています。
+
+### インストール方法
+
+スキルディレクトリをグローバル設定にコピー：
+
+```bash
+mkdir -p ~/.claude/skills
+cp -r skills/* ~/.claude/skills/
+```
+
+### 利用可能なスキル
+
+| スキル | 説明 | 使い方 |
+|--------|------|--------|
+| `/jira-search` | JQLでIssueを検索 | `/jira-search status != Done` |
+| `/jira-get` | Issue詳細を取得 | `/jira-get PROJ-123` |
+| `/jira-list-open` | 未完了チケット一覧 | `/jira-list-open` |
+| `/jira-my-issues` | 自分のチケット一覧 | `/jira-my-issues` |
+
+### スキルの使い方
+
+Claude Code で `/` を入力すると、利用可能なスキル一覧が表示されます。
+
+例：
+```
+/jira-search priority = High AND status != Done
+/jira-get ME-382
+/jira-list-open
+/jira-my-issues
+```
+
 ## 開発者向け情報
 
 ### 開発環境のセットアップ
