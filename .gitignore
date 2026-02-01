@@ -1,0 +1,26 @@
+# Bun
+node_modules/
+bun.lockb
+*.bun
+
+# Environment
+.env
+.env.local
+.mcp.json
+
+# Build outputs
+dist/
+*.out
+
+# OS
+.DS_Store
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+mcp-jira
