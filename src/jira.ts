@@ -45,11 +45,12 @@ export class JiraClient {
     return (await res.json()) as T;
   }
 
-  async searchIssues(args: {jql: string; maxResults?: number; startAt?: number}) {
-    return this.getJson<any>("rest/api/3/search", {
+  async searchIssues(args: {jql: string; maxResults?: number; pageToken?: string}) {
+    return this.getJson<any>("rest/api/3/search/jql", {
       jql: args.jql,
       maxResults: args.maxResults ?? 10,
-      startAt: args.startAt,
+      pageToken: args.pageToken,
+      fields: "key,summary,status,assignee,reporter,created,updated",
     });
   }
 

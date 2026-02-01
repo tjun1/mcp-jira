@@ -198,11 +198,11 @@ server.tool(
   {
     jql: z.string().min(1),
     maxResults: z.number().int().min(1).max(100).optional(),
-    startAt: z.number().int().min(0).optional(),
+    pageToken: z.string().optional(),
   },
-  async ({ jql, maxResults, startAt }) => {
+  async ({ jql, maxResults, pageToken }) => {
     const effectiveJql = buildJql(jql);
-    const data = await client.searchIssues({ jql: effectiveJql, maxResults, startAt});
+    const data = await client.searchIssues({ jql: effectiveJql, maxResults, pageToken});
 
     const issues = (data?.issues ?? []).map((issue: any) => ({
       key: issue.key,
@@ -216,9 +216,8 @@ server.tool(
 
     const payload = {
       issues,
-      total: data?.total,
-      startAt: data?.startAt,
-      maxResults: data?.maxResults,
+      nextPageToken: data?.nextPageToken,
+      isLast: data?.isLast,
     };
 
     return {
