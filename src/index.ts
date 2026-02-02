@@ -2,6 +2,14 @@ import {McpServer} from "@modelcontextprotocol/sdk/server/mcp.js";
 import {StdioServerTransport} from "@modelcontextprotocol/sdk/server/stdio.js";
 import {z} from "zod";
 import {JiraClient} from "./jira";
+import pkg from "../package.json";
+
+// バージョン表示（実際のコマンドライン引数のみチェック）
+const args = Bun.argv.slice(2);
+if (args.includes("-v") || args.includes("--version")) {
+  console.log(pkg.version);
+  process.exit(0);
+}
 
 function requireEnv(name: string) {
   const v = Bun.env[name];
@@ -190,7 +198,7 @@ function buildJql(userJql: string): string {
   return buildJqlWithProjects(userJql, defaultProjects);
 }
 
-const server = new McpServer({name: "mcp-jira", version: "0.1.0"});
+const server = new McpServer({name: "mcp-jira", version: pkg.version});
 
 server.tool(
   "jira_search",
