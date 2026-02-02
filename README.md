@@ -120,10 +120,10 @@ PROJ-123
 .mcp.json
 ```
 
-リポジトリには `.mcp.json.example` が含まれています。これをコピーして使用してください：
+リポジトリには `mcp.example.json` が含まれています。これをコピーして使用してください：
 
 ```bash
-cp .mcp.json.example .mcp.json
+cp mcp.example.json .mcp.json
 # .mcp.json を編集して、自分の環境に合わせて設定
 ```
 
