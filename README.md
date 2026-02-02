@@ -120,7 +120,120 @@ PROJ-123
 .mcp.json
 ```
 
-チームで設定を共有したい場合は、`.mcp.json.example` のようなテンプレートファイルを用意し、各自がコピーして使う運用にする。
+リポジトリには `.mcp.json.example` が含まれています。これをコピーして使用してください：
+
+```bash
+cp .mcp.json.example .mcp.json
+# .mcp.json を編集して、自分の環境に合わせて設定
+```
+
+### VSCode + GitHub Copilot
+
+VSCode の GitHub Copilot から mcp-jira を利用できる。
+
+**前提条件:**
+- VS Code 1.102 以降
+- GitHub Copilot 拡張機能
+- GitHub Copilot Chat 拡張機能
+
+#### セットアップ手順
+
+プロジェクトルートに `.vscode/mcp.json` を作成する。設定方法は2つある。
+
+##### 方法1: シンプルな設定（inputs 不使用）
+
+API トークンを設定ファイルに直接記述する方法。
+
+**手順:**
+
+1. `.vscode` ディレクトリを作成（存在しない場合）
+   ```bash
+   mkdir -p .vscode
+   ```
+
+2. `.vscode/mcp.json` を作成して以下を記述
+   ```json
+   {
+     "servers": {
+       "jira": {
+         "command": "$HOME/.local/bin/mcp-jira",
+         "args": [],
+         "env": {
+           "JIRA_BASE_URL": "https://your-domain.atlassian.net",
+           "JIRA_EMAIL": "your-email@example.com",
+           "JIRA_API_TOKEN": "your-api-token",
+           "JIRA_DEFAULT_PROJECTS": "PROJ1,PROJ2"
+         }
+       }
+     }
+   }
+   ```
+
+3. VSCode を再起動
+4. GitHub Copilot Chat から `@jira` として利用可能
+
+##### 方法2: 推奨設定（inputs 使用）
+
+API トークンを起動時にプロンプトで入力する方法。認証情報がファイルに残らないため安全。
+
+**手順:**
+
+1. `.vscode` ディレクトリを作成（存在しない場合）
+   ```bash
+   mkdir -p .vscode
+   ```
+
+2. `.vscode/mcp.json` を作成して以下を記述
+   ```json
+   {
+     "inputs": {
+       "jiraApiToken": {
+         "type": "promptString",
+         "password": true,
+         "description": "JIRA API Token"
+       }
+     },
+     "servers": {
+       "jira": {
+         "command": "$HOME/.local/bin/mcp-jira",
+         "args": [],
+         "env": {
+           "JIRA_BASE_URL": "https://your-domain.atlassian.net",
+           "JIRA_EMAIL": "your-email@example.com",
+           "JIRA_API_TOKEN": "${input:jiraApiToken}",
+           "JIRA_DEFAULT_PROJECTS": "PROJ1,PROJ2"
+         }
+       }
+     }
+   }
+   ```
+
+3. VSCode を再起動
+4. GitHub Copilot を使用する際、API トークンの入力プロンプトが表示される（`password: true` により入力内容は隠される）
+
+##### サンプルファイルの利用
+
+プロジェクトルートの `mcp.vscode.example.json` をコピーして使うこともできる：
+
+```bash
+mkdir -p .vscode
+cp mcp.vscode.example.json .vscode/mcp.json
+# エディタで .vscode/mcp.json を開いて環境に合わせて編集
+```
+
+#### Claude Desktop との形式の違い
+
+| 項目 | Claude Desktop | VSCode |
+|------|----------------|--------|
+| 設定ファイル | `~/.claude/claude_desktop_config.json` または `.mcp.json` | `.vscode/mcp.json` |
+| ルートキー | `mcpServers` | `servers` |
+| command | 絶対パスが必要 | `$HOME` 変数が使える |
+| 機密情報 | env に直接記述 | inputs で変数化可能 |
+
+#### 注意事項
+
+- `.vscode/mcp.json` には認証情報が含まれるため、バージョン管理から除外すること（`.gitignore` に追加済み）
+- チームで設定を共有する場合は、各自が `mcp.vscode.example.json` をコピーして `.vscode/mcp.json` を作成する運用にする
 
 ## 利用可能なツール
 

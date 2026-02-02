@@ -27,8 +27,22 @@ if [ ! -d "$INSTALL_DIR" ]; then
 fi
 
 # バイナリのコピー
-echo "インストールしています..."
+echo "バイナリをインストールしています..."
 cp mcp-jira "$INSTALL_DIR/mcp-jira"
 chmod +x "$INSTALL_DIR/mcp-jira"
 
-echo "完了しました: $INSTALL_DIR/mcp-jira"
+echo "✓ バイナリのインストール完了: $INSTALL_DIR/mcp-jira"
+
+# スキルのインストール
+SKILLS_DIR="$HOME/.claude/skills"
+if [ -d "skills" ]; then
+  echo "Claude Code スキルをインストールしています..."
+  mkdir -p "$SKILLS_DIR"
+  cp -r skills/* "$SKILLS_DIR/"
+  echo "✓ スキルのインストール完了: $SKILLS_DIR"
+else
+  echo "⚠ skills ディレクトリが見つかりませんでした。スキルのインストールをスキップします。"
+fi
+
+echo ""
+echo "インストールが完了しました！"

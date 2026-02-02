@@ -1,0 +1,21 @@
+{
+  "inputs": {
+    "jiraApiToken": {
+      "type": "promptString",
+      "password": true,
+      "description": "JIRA API Token"
+    }
+  },
+  "servers": {
+    "jira": {
+      "command": "$HOME/.local/bin/mcp-jira",
+      "args": [],
+      "env": {
+        "JIRA_BASE_URL": "https://your-domain.atlassian.net",
+        "JIRA_EMAIL": "your-email@example.com",
+        "JIRA_API_TOKEN": "${input:jiraApiToken}",
+        "JIRA_DEFAULT_PROJECTS": "PROJ1,PROJ2"
+      }
+    }
+  }
+}

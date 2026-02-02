@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "jira": {
+      "command": "/Users/your-name/.local/bin/mcp-jira",
+      "args": [],
+      "env": {
+        "JIRA_BASE_URL": "https://your-domain.atlassian.net",
+        "JIRA_EMAIL": "your-email@example.com",
+        "JIRA_API_TOKEN": "your-api-token",
+        "JIRA_DEFAULT_PROJECTS": "PROJECT"
+      }
+    }
+  }
+}
