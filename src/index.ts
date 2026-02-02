@@ -4,11 +4,12 @@ import {z} from "zod";
 import {JiraClient} from "./jira";
 
 declare const VERSION: string;
+const version = typeof VERSION !== "undefined" ? VERSION : "dev";
 
 // バージョン表示（実際のコマンドライン引数のみチェック）
 const args = Bun.argv.slice(2);
 if (args.includes("-v") || args.includes("--version")) {
-  console.log(VERSION);
+  console.log(version);
   process.exit(0);
 }
 
@@ -199,7 +200,7 @@ function buildJql(userJql: string): string {
   return buildJqlWithProjects(userJql, defaultProjects);
 }
 
-const server = new McpServer({name: "mcp-jira", version: VERSION});
+const server = new McpServer({name: "mcp-jira", version: version});
 
 server.tool(
   "jira_search",
