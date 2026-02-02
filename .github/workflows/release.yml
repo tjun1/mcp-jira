@@ -24,6 +24,10 @@ jobs:
 
       - name: Run tests
         run: bun test
+        env:
+          JIRA_BASE_URL: https://test.atlassian.net
+          JIRA_EMAIL: test@example.com
+          JIRA_API_TOKEN: test-token
 
       - name: Build for macOS (arm64)
         run: bun build --compile --target=bun-darwin-arm64 --outfile=mcp-jira-darwin-arm64 src/index.ts

@@ -1,14 +1,7 @@
-import { beforeAll, test, expect, describe } from "bun:test";
+import { test, expect, describe } from "bun:test";
 import { buildJqlWithProjects } from "./index";
 
 describe("buildJqlWithProjects", () => {
-  beforeAll(() => {
-    // テスト用の環境変数
-    Bun.env.JIRA_BASE_URL = "https://test.atlassian.net";
-    Bun.env.JIRA_EMAIL = "test@example.com";
-    Bun.env.JIRA_API_TOKEN = "test-token";
-  })
-
   const projects = ["PROJ1", "PROJ2"];
 
   test("ORDER BY なし", () => {
