@@ -1,6 +1,6 @@
 {
   "name": "mcp-jira",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "module": "index.ts",
   "type": "module",
   "private": true,
