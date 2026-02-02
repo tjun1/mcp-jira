@@ -30,13 +30,13 @@ jobs:
           JIRA_API_TOKEN: test-token
 
       - name: Build for macOS (arm64)
-        run: bun build --compile --target=bun-darwin-arm64 --outfile=mcp-jira-darwin-arm64 src/index.ts
+        run: bun build --compile --define VERSION='"'$(cat VERSION)'"' --target=bun-darwin-arm64 --outfile=mcp-jira-darwin-arm64 src/index.ts
 
       - name: Build for Linux (x64)
-        run: bun build --compile --target=bun-linux-x64 --outfile=mcp-jira-linux-x64 src/index.ts
+        run: bun build --compile --define VERSION='"'$(cat VERSION)'"' --target=bun-linux-x64 --outfile=mcp-jira-linux-x64 src/index.ts
 
       - name: Build for Windows (x64)
-        run: bun build --compile --target=bun-windows-x64 --outfile=mcp-jira-windows-x64.exe src/index.ts
+        run: bun build --compile --define VERSION='"'$(cat VERSION)'"' --target=bun-windows-x64 --outfile=mcp-jira-windows-x64.exe src/index.ts
 
       - name: Package skills
         run: tar -czf skills.tar.gz skills/

@@ -17,7 +17,7 @@ bun install
 
 # ビルド
 echo "ビルドしています..."
-bun build --compile --outfile=mcp-jira src/index.ts
+bun build --compile --define VERSION='"'$(cat VERSION)'"' --outfile=mcp-jira src/index.ts
 
 # インストール先の準備
 INSTALL_DIR="$HOME/.local/bin"
