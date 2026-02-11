@@ -255,4 +255,69 @@ server.tool(
   },
 );
 
+server.tool(
+  "jira_get_transitions",
+  "Get available transitions for a JIRA issue. Use this before transitioning to see what status changes are possible.",
+  {
+    issueIdOrKey: z.string().min(1),
+  },
+  async ({issueIdOrKey}) => {
+    const data = await client.getTransitions({issueIdOrKey});
+
+    const transitions = (data?.transitions ?? []).map((t: any) => ({
+      id: t.id,
+      name: t.name,
+      to: {
+        id: t.to?.id,
+        name: t.to?.name,
+      },
+    }));
+
+    const payload = {
+      issueKey: issueIdOrKey,
+      transitions,
+    };
+
+    return {
+      content: [{ type: "text", text: JSON.stringify(payload, null, 2)}],
+    };
+  },
+);
+
+server.tool(
+  "jira_transition_issue",
+  "Transition a JIRA issue to a different status. Use jira_get_transitions first to get available transition IDs.",
+  {
+    issueIdOrKey: z.string().min(1),
+    transitionId: z.string().min(1),
+  },
+  async ({issueIdOrKey, transitionId}) => {
+    await client.transitionIssue({issueIdOrKey, transitionId});
+
+    return {
+      content: [{ type: "text", text: `Successfully transitioned issue ${issueIdOrKey} using transition ID ${transitionId}`}],
+    };
+  },
+);
+
+server.tool(
+  "jira_add_comment",
+  "Add a comment to a JIRA issue.",
+  {
+    issueIdOrKey: z.string().min(1),
+    comment: z.string().min(1),
+  },
+  async ({issueIdOrKey, comment}) => {
+    const data = await client.addComment({issueIdOrKey, comment});
+
+    const commentId = data?.id ?? "";
+    const author = data?.author?.displayName ?? "";
+    const created = data?.created ?? "";
+
+    return {
+      content: [{ type: "text", text: `Comment added to ${issueIdOrKey} by ${author} at ${created} (ID: ${commentId})`}],
+    };
+  },
+);
+
 await server.connect(new StdioServerTransport());

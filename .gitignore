@@ -21,6 +21,8 @@ dist/
 # IDE
 .idea/
 *.iml
+.claude/
+.serena/
 
 # VSCode MCP configuration (contains secrets)
 .vscode/mcp.json

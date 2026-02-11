@@ -1,6 +1,6 @@
 # mcp-jira
 
-JIRA の Issue 検索・詳細取得機能を提供する MCP サーバー。
+JIRA の Issue 検索・詳細取得・更新機能を提供する MCP サーバー。
 
 ## インストール
 
@@ -293,6 +293,55 @@ Issue の詳細情報を取得する。
 - 「jira_get_issue で PROJ-123 の詳細を見せて」
 - 「jira_get_issue でそのチケットの内容を取得して」
 
+### jira_get_transitions
+
+Issue で利用可能なステータス遷移（トランジション）を取得する。
+
+**引数:**
+- `issueIdOrKey`: Issue キーまたはID（必須、例: `PROJ-123`）
+
+**返却内容:**
+- トランジションID（ステータス変更時に使用）
+- トランジション名
+- 遷移先ステータス（ID と名前）
+
+**使い方の例:**
+- 「jira_get_transitions で PROJ-123 のステータス変更可能な選択肢を見せて」
+- 「このチケットのトランジション一覧を取得して」
+
+### jira_transition_issue
+
+Issue のステータスを変更する。
+
+**引数:**
+- `issueIdOrKey`: Issue キーまたはID（必須、例: `PROJ-123`）
+- `transitionId`: トランジションID（必須、例: `"11"`）
+
+**注意事項:**
+- 事前に `jira_get_transitions` で利用可能なトランジションIDを確認すること
+- 権限がない場合や、ワークフローで許可されていないトランジションは実行できない
+
+**使い方の例:**
+- 「まず jira_get_transitions で PROJ-123 のトランジションを確認して、適切なIDで jira_transition_issue を実行して」
+- 「このチケットを In Progress に進めて」
+
+### jira_add_comment
+
+Issue にコメントを追加する。
+
+**引数:**
+- `issueIdOrKey`: Issue キーまたはID（必須、例: `PROJ-123`）
+- `comment`: コメント内容（必須、プレーンテキスト）
+
+**返却内容:**
+- コメントID
+- コメント作成者
+- 作成日時
+
+**使い方の例:**
+- 「jira_add_comment で PROJ-123 に『レビュー完了しました』とコメントして」
+- 「このチケットに進捗状況をコメントして」
+
 ## Claude Code Skills
 
 Claude Code で使える便利なスキル（スラッシュコマンド）を提供しています。
@@ -324,6 +373,9 @@ cp -r skills/* ~/.claude/skills/
 | `/jira-get` | Issue詳細を取得 | `/jira-get PROJ-123` |
 | `/jira-list-open` | 未完了チケット一覧 | `/jira-list-open` |
 | `/jira-my-issues` | 自分のチケット一覧 | `/jira-my-issues` |
+| `/jira-get-transitions` | 利用可能なトランジション取得 | `/jira-get-transitions PROJ-123` |
+| `/jira-transition` | ステータス変更 | `/jira-transition PROJ-123 11` |
+| `/jira-add-comment` | コメント追加 | `/jira-add-comment PROJ-123 レビュー完了` |
 
 ### スキルの使い方
 

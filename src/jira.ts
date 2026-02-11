@@ -45,6 +45,24 @@ export class JiraClient {
     return (await res.json()) as T;
   }
 
+  private async postJson<T>(path: string, body: any, query?: Record<string, string | number | undefined>): Promise<T> {
+    const url = this.makeUrl(path, query);
+    const headers = {
+      ...this.makeHeaders(),
+      "Content-Type": "application/json",
+    };
+    const res = await fetch(url, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      const bodyText = await res.text().catch(() => "");
+      throw new Error(`JIRA API ${res.status} ${res.statusText}: ${bodyText.slice(0, 500)}`);
+    }
+    return (await res.json()) as T;
+  }
+
   async searchIssues(args: {jql: string; maxResults?: number; pageToken?: string}) {
     return this.getJson<any>("rest/api/3/search/jql", {
       jql: args.jql,
@@ -58,5 +76,43 @@ export class JiraClient {
     return this.getJson<any>(`rest/api/3/issue/${encodeURIComponent(args.issueIdOrKey)}`, {
       expand: args.expand ?? "renderedFields,names",
     });
+  }
+
+  async getTransitions(args: {issueIdOrKey: string}) {
+    return this.getJson<any>(`rest/api/3/issue/${encodeURIComponent(args.issueIdOrKey)}/transitions`);
+  }
+
+  async transitionIssue(args: {issueIdOrKey: string; transitionId: string}) {
+    return this.postJson<any>(
+      `rest/api/3/issue/${encodeURIComponent(args.issueIdOrKey)}/transitions`,
+      {
+        transition: {
+          id: args.transitionId,
+        },
+      },
+    );
+  }
+
+  async addComment(args: {issueIdOrKey: string; comment: string}) {
+    return this.postJson<any>(
+      `rest/api/3/issue/${encodeURIComponent(args.issueIdOrKey)}/comment`,
+      {
+        body: {
+          type: "doc",
+          version: 1,
+          content: [
+            {
+              type: "paragraph",
+              content: [
+                {
+                  type: "text",
+                  text: args.comment,
+                },
+              ],
+            },
+          ],
+        },
+      },
+    );
   }
 }
