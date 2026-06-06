@@ -45,6 +45,23 @@ export class JiraClient {
     return (await res.json()) as T;
   }
 
+  private async putJson(path: string, body: any): Promise<void> {
+    const url = this.makeUrl(path);
+    const headers = {
+      ...this.makeHeaders(),
+      "Content-Type": "application/json",
+    };
+    const res = await fetch(url, {
+      method: "PUT",
+      headers,
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      const bodyText = await res.text().catch(() => "");
+      throw new Error(`JIRA API ${res.status} ${res.statusText}: ${bodyText.slice(0, 500)}`);
+    }
+  }
+
   private async postJson<T>(path: string, body: any, query?: Record<string, string | number | undefined>): Promise<T> {
     const url = this.makeUrl(path, query);
     const headers = {
@@ -90,6 +107,13 @@ export class JiraClient {
           id: args.transitionId,
         },
       },
+    );
+  }
+
+  async updateIssueDescription(args: {issueIdOrKey: string; adf: object}): Promise<void> {
+    await this.putJson(
+      `rest/api/3/issue/${encodeURIComponent(args.issueIdOrKey)}`,
+      { fields: { description: args.adf } },
     );
   }
 

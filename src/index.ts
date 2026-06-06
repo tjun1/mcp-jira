@@ -19,6 +19,31 @@ function requireEnv(name: string) {
   return v;
 }
 
+// Markdown（段落・見出しのみ）を ADF に変換
+export function markdownToAdf(markdown: string): object {
+  const blocks = markdown.split(/\n\n+/).map(b => b.trim()).filter(Boolean);
+  if (blocks.length === 0) {
+    throw new Error("description must not be empty");
+  }
+
+  const content = blocks.map(block => {
+    const headingMatch = block.match(/^(#{1,6})\s+(.+)/);
+    if (headingMatch) {
+      return {
+        type: "heading",
+        attrs: { level: headingMatch[1].length },
+        content: [{ type: "text", text: headingMatch[2].trim() }],
+      };
+    }
+    return {
+      type: "paragraph",
+      content: [{ type: "text", text: block }],
+    };
+  });
+
+  return { type: "doc", version: 1, content };
+}
+
 // ADF (Atlassian Document Format) を Markdown に変換
 export function adfToMarkdown(adf: any): string {
   if (!adf || typeof adf !== "object") return "";
@@ -296,6 +321,23 @@ server.tool(
 
     return {
       content: [{ type: "text", text: `Successfully transitioned issue ${issueIdOrKey} using transition ID ${transitionId}`}],
+    };
+  },
+);
+
+server.tool(
+  "jira_update_description",
+  "Update the description of a JIRA issue. Accepts Markdown (headings and paragraphs only). WARNING: this overwrites the entire existing description.",
+  {
+    issueIdOrKey: z.string().min(1),
+    description: z.string().min(1),
+  },
+  async ({issueIdOrKey, description}) => {
+    const adf = markdownToAdf(description);
+    await client.updateIssueDescription({issueIdOrKey, adf});
+
+    return {
+      content: [{ type: "text", text: `Description of ${issueIdOrKey} updated successfully.` }],
     };
   },
 );

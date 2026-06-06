@@ -1,5 +1,49 @@
 import { test, expect, describe } from "bun:test";
-import { buildJqlWithProjects } from "./index";
+import { buildJqlWithProjects, markdownToAdf } from "./index";
+
+describe("markdownToAdf", () => {
+  test("段落1つ", () => {
+    const result = markdownToAdf("本文テキスト") as any;
+    expect(result.type).toBe("doc");
+    expect(result.content).toHaveLength(1);
+    expect(result.content[0]).toEqual({
+      type: "paragraph",
+      content: [{ type: "text", text: "本文テキスト" }],
+    });
+  });
+
+  test("段落複数", () => {
+    const result = markdownToAdf("段落1\n\n段落2") as any;
+    expect(result.content).toHaveLength(2);
+    expect(result.content[0].type).toBe("paragraph");
+    expect(result.content[1].type).toBe("paragraph");
+  });
+
+  test("見出し", () => {
+    const result = markdownToAdf("## 背景\n\n本文") as any;
+    expect(result.content[0]).toEqual({
+      type: "heading",
+      attrs: { level: 2 },
+      content: [{ type: "text", text: "背景" }],
+    });
+    expect(result.content[1].type).toBe("paragraph");
+  });
+
+  test("見出しレベル1〜6", () => {
+    for (let i = 1; i <= 6; i++) {
+      const result = markdownToAdf(`${"#".repeat(i)} タイトル`) as any;
+      expect(result.content[0].attrs.level).toBe(i);
+    }
+  });
+
+  test("空文字列はエラー", () => {
+    expect(() => markdownToAdf("")).toThrow("description must not be empty");
+  });
+
+  test("空白のみはエラー", () => {
+    expect(() => markdownToAdf("   \n\n  ")).toThrow("description must not be empty");
+  });
+});
 
 describe("buildJqlWithProjects", () => {
   const projects = ["PROJ1", "PROJ2"];

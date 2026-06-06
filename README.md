@@ -342,6 +342,22 @@ Issue にコメントを追加する。
 - 「jira_add_comment で PROJ-123 に『レビュー完了しました』とコメントして」
 - 「このチケットに進捗状況をコメントして」
 
+### jira_update_description
+
+Issue の概要欄（description）を更新する。既存の内容を**完全に上書き**する。
+
+**引数:**
+- `issueIdOrKey`: Issue キーまたはID（必須、例: `PROJ-123`）
+- `description`: 更新内容（必須、Markdown形式）
+
+**対応するMarkdown記法:**
+- 見出し（`#` `##` `###` など）
+- 段落（空行で区切る）
+
+**使い方の例:**
+- 「jira_update_description で PROJ-123 の概要欄を『## 背景\n〇〇という問題がある。』に更新して」
+- 「まず jira_get_issue で PROJ-123 の内容を取得し、概要欄に受け入れ条件を追加して更新して」
+
 ## Claude Code Skills
 
 Claude Code で使える便利なスキル（スラッシュコマンド）を提供しています。
@@ -376,6 +392,7 @@ cp -r skills/* ~/.claude/skills/
 | `/jira-get-transitions` | 利用可能なトランジション取得 | `/jira-get-transitions PROJ-123` |
 | `/jira-transition` | ステータス変更 | `/jira-transition PROJ-123 11` |
 | `/jira-add-comment` | コメント追加 | `/jira-add-comment PROJ-123 レビュー完了` |
+| `/jira-update-description` | 概要欄を更新 | `/jira-update-description PROJ-123 ## 背景\n〇〇` |
 
 ### スキルの使い方
 
